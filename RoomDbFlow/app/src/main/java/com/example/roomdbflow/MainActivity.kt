@@ -1,12 +1,19 @@
 package com.example.roomdbflow
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.roomdbflow.models.Product
+import com.example.roomdbflow.viewModel.ProductViewModel
 
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 // https://codelabs.developers.google.com/codelabs/android-room-with-a-view-kotlin/#4
 // https://github.com/amitshekhariitbhu/Android-Debug-Database
@@ -14,14 +21,43 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var productViewModel: ProductViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+
+            val size: Int = (productViewModel.products.value?.size ?: 0) + 1
+            val model = Product(
+                size.toLong(),
+                "Product $size",
+                Date(),
+                20.0,
+                0.0,
+                6,
+                1.0,
+                250.5
+            )
+            productViewModel.add(model)
+
+            Snackbar.make(view, "Product added", Snackbar.LENGTH_LONG).show()
+        }
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+        val adapter = ProductListAdapter(this)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        productViewModel = ViewModelProviders.of(this).get(ProductViewModel::class.java)
+
+        productViewModel.products.observe(this) { products ->
+            products?.let { products ->
+                Log.d(TAG, products.size.toString())
+                adapter.setProducts(products)
+            }
         }
     }
 
@@ -39,5 +75,9 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    companion object {
+        private val TAG: String = "MainActivity"
     }
 }
