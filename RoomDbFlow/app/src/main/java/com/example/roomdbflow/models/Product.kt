@@ -1,17 +1,14 @@
-package com.example.roomdbflow
+package com.example.roomdbflow.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
+import androidx.room.*
 import org.jetbrains.annotations.NotNull
-import java.util.*
+import java.sql.Date
 
 @Entity(tableName = "products")
 data class Product(
     @PrimaryKey(autoGenerate = true)
     @NotNull
-    var id: String,
+    var id: Long,
     var name: String,
     var createdAt: Date,
     var unitPrice: Double,
@@ -20,4 +17,14 @@ data class Product(
     var quantity: Int,
     var tax: Double,
     @Ignore var subtotal: Double
-)
+) {
+    constructor(
+        id: Long,
+        name: String,
+        createdAt: Date,
+        unitPrice: Double,
+        discount: Double,
+        quantity: Int,
+        tax: Double
+    ) : this(id, name, createdAt, unitPrice, discount, quantity, tax, (unitPrice * quantity) * (1 - discount + tax))
+}

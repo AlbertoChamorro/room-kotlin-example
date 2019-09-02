@@ -1,12 +1,13 @@
-package com.example.roomdbflow
+package com.example.roomdbflow.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.roomdbflow.models.Product
 
 @Dao
 interface ProductDao {
 
-    @Query("SELECT * FROM products where id LIKE :id ORDER BY id ASC")
+    @Query("SELECT * FROM products where id = :id")
     fun get(id: Int): LiveData<Product>
 
     @Insert
@@ -15,8 +16,8 @@ interface ProductDao {
     @Update
     suspend fun update(mode: Product)
 
-    @Query("SELECT * FROM products")
-    fun get(): LiveData<List<Product>>
+    @Query("SELECT * FROM products ORDER BY id ASC")
+    fun getAll(): LiveData<List<Product>>
 
     @Query("DELETE FROM products")
     suspend fun deleteAll()
