@@ -6,6 +6,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,10 +14,15 @@ import com.example.roomdbflow.models.Product
 import com.example.roomdbflow.viewModel.ProductViewModel
 
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
+import org.joda.time.DateTime
 
 // https://codelabs.developers.google.com/codelabs/android-room-with-a-view-kotlin/#4
 // https://github.com/amitshekhariitbhu/Android-Debug-Database
+
+// types converters room sqlite
+// https://medium.com/androiddevelopers/room-time-2b4cf9672b98
+// https://www.joda.org/joda-time/
+
 // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#8
 
 class MainActivity : AppCompatActivity() {
@@ -32,14 +38,12 @@ class MainActivity : AppCompatActivity() {
 
             val size: Int = (productViewModel.products.value?.size ?: 0) + 1
             val model = Product(
-                size.toLong(),
                 "Product $size",
-                Date(),
+                DateTime(),
                 20.0,
                 0.0,
                 6,
-                1.0,
-                250.5
+                1.0
             )
             productViewModel.add(model)
 
@@ -53,12 +57,12 @@ class MainActivity : AppCompatActivity() {
 
         productViewModel = ViewModelProviders.of(this).get(ProductViewModel::class.java)
 
-        productViewModel.products.observe(this) { products ->
-            products?.let { products ->
+        productViewModel.products.observe(this, Observer { data ->
+            data?.let { products ->
                 Log.d(TAG, products.size.toString())
                 adapter.setProducts(products)
             }
-        }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,6 +82,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG: String = "MainActivity"
+        private const val TAG: String = "MainActivity"
     }
 }

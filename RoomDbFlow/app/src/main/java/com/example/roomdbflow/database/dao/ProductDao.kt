@@ -16,7 +16,7 @@ interface ProductDao {
     @Update
     suspend fun update(mode: Product)
 
-    @Query("SELECT * FROM products ORDER BY id ASC")
+    @Query("SELECT * FROM products ORDER BY id DESC") // datetime(field)
     fun getAll(): LiveData<List<Product>>
 
     @Query("DELETE FROM products")

@@ -1,16 +1,18 @@
 package com.example.roomdbflow.models
 
 import androidx.room.*
+import com.example.roomdbflow.database.converters.DateConverter
 import org.jetbrains.annotations.NotNull
-import java.sql.Date
+import org.joda.time.DateTime
 
 @Entity(tableName = "products")
+@TypeConverters(DateConverter::class)
 data class Product(
     @PrimaryKey(autoGenerate = true)
     @NotNull
     var id: Long,
     var name: String,
-    var createdAt: Date,
+    var createdAt: DateTime,
     var unitPrice: Double,
     @ColumnInfo(name = "discount_percentage")
     var discount: Double,
@@ -19,12 +21,11 @@ data class Product(
     @Ignore var subtotal: Double
 ) {
     constructor(
-        id: Long,
         name: String,
-        createdAt: Date,
+        createdAt: DateTime,
         unitPrice: Double,
         discount: Double,
         quantity: Int,
         tax: Double
-    ) : this(id, name, createdAt, unitPrice, discount, quantity, tax, (unitPrice * quantity) * (1 - discount + tax))
+    ) : this(0, name, createdAt, unitPrice, discount, quantity, tax, (quantity * unitPrice) * (1 - discount + tax))
 }

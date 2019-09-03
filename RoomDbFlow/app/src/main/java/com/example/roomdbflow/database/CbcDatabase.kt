@@ -11,7 +11,7 @@ import com.example.roomdbflow.database.dao.ProductDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
+import org.joda.time.DateTime
 
 @Database(entities = [Product::class], version = BuildConfig.VERSION_CODE)
 abstract class CbcDatabase : RoomDatabase() {
@@ -55,13 +55,10 @@ abstract class CbcDatabase : RoomDatabase() {
             }
         }
 
-        fun populateDatabase(productDao: ProductDao) {
-            suspend {
-                productDao.deleteAll()
-            }
-
-            val catProd1 = Product(1, "Product 1", Date(), 100.5, 0.0, 10, 10.0, 10000.25)
-            suspend { productDao.add(catProd1) }
+        suspend fun populateDatabase(productDao: ProductDao) {
+            productDao.deleteAll()
+            val catProd1 = Product("Product Seed", DateTime(), 100.5, 0.0, 10, 0.1)
+            productDao.add(catProd1)
         }
     }
 }
